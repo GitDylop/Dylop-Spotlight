@@ -1,0 +1,78 @@
+.context-menu {
+    position: absolute;
+    z-index: 1000;
+    font-family: sans-serif;
+}
+
+.cm-row-header {
+    position: absolute;
+    background: hsla(210, 25%, 95%, 0.85);
+    top: -75px;
+    display: flex;
+    flex-direction: row;
+    border-radius: 100px;
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 16px hsla(210, 50%, 95%, 0.25);
+    border: 2px solid hsla(210, 25%, 50%, 0.25);
+    padding: 2px;
+}
+
+.cm-main {
+    background: hsla(210, 25%, 95%, 0.85);
+    top: -75px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 16px hsla(210, 50%, 95%, 0.25);
+    border: 2px solid hsla(210, 25%, 50%, 0.25);
+    padding: 2px;
+}
+
+.cm-row-header .cm-item, .cm-side-collum .cm-item, .cm-bubble {
+    border-radius: 100px;
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.cm-side-collum {
+    position: absolute;
+    right: -75px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cm-bubble {
+    background: hsla(210, 25%, 95%, 0.85);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 16px hsla(210, 50%, 75%, 0.25);
+    transition: all 0.2s ease-in-out;
+    border: 2px solid hsla(210, 25%, 50%, 0.25);
+    align-content: center;
+}
+
+.cm-bubble:hover {
+    transform: scale(1.1);
+}
+
+.cm-item {
+    min-width: 200px;
+    height: 35px;
+    max-width: 100%;
+    align-content: center;
+    border-radius: 10px;
+    padding: 0 5px;
+    cursor: pointer;
+}
+
+
+.cm-item:hover {
+    background-color: hsla(0, 0%, 0%, 0.05);
+}

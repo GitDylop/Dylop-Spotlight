@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document 1</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/editor.css">
+    <link rel="stylesheet" href="/css/context.css">
+</head>
+<body>
+    <header id="header">
+        <p style="flex: 1;">Dylop <c color="sky-blue">Spotlight</c></p>
+        <div style="flex: 0;">Dovydas</div> <!-- TODO: Profile -->
+    </header>
+
+    <div id="editor">
+        <div id="toolbar">
+            <table>
+                <colgroup>
+                    <col span="50" style="width: 30px;">
+                </colgroup>
+
+                <tr>
+                    <td rowspan="2" colspan="2" onclick="addObject()">+</td>
+                    <td rowspan="3" class="tspace"></td>
+                    <td colspan="5">Sans-serif</td>
+                    <td colspan="2">FSize</td>
+                    <td><sub>A</sub>^</td>
+                    <td><sub>A</sub><sup>v</sup></td>
+                    <td rowspan="3" class="tspace"></td>
+                    <td>L</td>
+                    <td>C</td>
+                    <td>R</td>
+                    <td>S</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Fill</td>
+                    <td colspan="2">Text</td>
+                    <td colspan="2">Mark</td>
+                    <td colspan="2">Aa</td>
+                    <td>Clear</td>
+                </tr>
+                <tr>
+                    <td colspan="2">v</td>
+                    <td><b>B</b></td>
+                    <td><i>I</i></td>
+                    <td><u>U</u></td>
+                    <td><s>S</s></td>
+                    <td><span style="text-shadow: 2px 2px 2px hsla(0, 0%, 0%, 0.5);">S</span></td>
+                    <td>X<sub>2</sub></td>
+                    <td>X<sup>2</sup></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="slides">
+            <div id="slides-toggle" style="text-align: right;">x</div>
+
+            <div id="slides-list">
+                <div class="slide" id="active-slide" onclick="openSlide(this)" index="0">
+                    <img src="">
+                    <p class="slide-number">1</p>
+                </div>
+            </div>
+
+            <button id="slides-new" onclick="newSlide()">+</button>
+        </div>
+
+        <div id="editor-canvas">
+            <div id="canvas" style="background-color: white;">
+                
+            </div>
+        </div>
+
+        <div id="status-bar">
+            <div class="status-bubble" bubble="circle" onclick="enterPresentationMode()">
+                P
+            </div>
+        </div>
+    </div>
+
+    <div id="presentation-mode">
+        <p id="EOP">This is the end of the presentation. Press ESC or change slide again to exit.</p>
+    </div>
+
+    <div id="editor-context" class="context-menu" style="display: none;">
+        <div class="cm-row-header">
+            <div class="cm-item" onclick="deleteObject()">DE</div>
+            <div class="cm-item">CU</div>
+            <div class="cm-item">CP</div>
+            <div class="cm-item">PA</div>
+        </div>
+        <div class="cm-side-collum">
+            <div class="cm-bubble">CO</div>
+            <div class="cm-bubble">AN</div>
+            <div class="cm-bubble">ED</div>
+        </div>
+        <div class="cm-main">
+            <div class="cm-item">COLOR</div>
+            <div class="cm-item">FILL</div>
+            <div class="cm-item">BORDER</div>
+        </div>
+    </div>
+
+    <div id="slidebar-context" class="context-menu" style="display: none;">
+        <div class="cm-row-header">
+            <div class="cm-item">DE</div>
+            <div class="cm-item">CU</div>
+            <div class="cm-item">CP</div>
+            <div class="cm-item">PA</div>
+        </div>
+        <div class="cm-main">
+            <div class="cm-item">+ NEW</div>
+        </div>
+    </div>
+</body>
+<script src="/js/editor.js" defer></script>
+</html>

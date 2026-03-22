@@ -1,0 +1,44 @@
+{
+    "title": "New Presentation",
+    "last_edited": "2024-06-15T12:00:00Z",
+    "slides": [
+        {
+            "slide_number": 1,
+            "transition": "none",
+            "elements": [
+                {
+                    "object": "text",
+                    "text": "Welcome to the Presentation",
+                    "style": {
+                        "font_size": 32,
+                        "color": "#000000",
+                        "position": {
+                            "x": 100,
+                            "y": 100
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "slide_number": 2,
+            "transition": "fade",
+            "elements": [
+                {
+                    "object": "image",
+                    "src": "path/to/image.png",
+                    "style": {
+                        "transform": {
+                            "x": 150,
+                            "y": 150,
+                            "width": 400,
+                            "height": 300,
+                            "rotation": 0,
+                            "layer": 1
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
