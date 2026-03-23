@@ -226,10 +226,6 @@ body {
     z-index: 0;
 }
 
-#current-present-slide {
-    z-index: 2;
-}
-
 .present-slide {
     z-index: 1;
     width: 100%;
