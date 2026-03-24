@@ -92,7 +92,7 @@ function addObject() {
     object.style.top = '390px';
     object.style.width = '300px';
     object.style.height = '300px';
-    object.style.backgroundColor = '#0000ff';
+    object.style.backgroundColor = `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)})`;
     // object.contentEditable = true;
 
     canvas.appendChild(object);
@@ -116,69 +116,124 @@ function createObjectFromData(data) {
     canvas.appendChild(object);
 }
 
+const editBox = document.getElementById('object-selection-box');
+let lastObject = null;
+
 document.addEventListener('mousedown', (e) => {
     if (presentationMode) {
         changeSlide('next');
     }
     else {
+        editBox.style.display = 'none';
+
         if (e.target.classList.contains('object')) {
             activeElement = e.target;
+            lastObject = activeElement;
+
 
             offsetX = e.clientX/scale - activeElement.offsetLeft;
             offsetY = e.clientY/scale - activeElement.offsetTop;
+
+
+            const rect = activeElement.getBoundingClientRect();
+            editBox.style.display = 'block';
+            editBox.style.left = rect.left - 5 + 'px';
+            editBox.style.top = rect.top - 5 + 'px';
+            editBox.style.width = activeElement.offsetWidth*scale + 10 + 'px';
+            editBox.style.height = activeElement.offsetHeight*scale + 10 + 'px';
+        }
+        if (e.target.classList.contains('osb-round-handle')) {
+            activeElement = e.target;
+            
+            // Užfiksuojame būseną paspaudimo akimirką
+            initialHeight = lastObject.offsetHeight;
+            initialTop = lastObject.offsetTop;
+            initialMouseY = e.clientY / scale; 
+
+            editBox.style.display = 'block';
         }
     }
 });
 
+let initialHeight, initialTop, initialMouseY;
+
 document.addEventListener('mousemove', (e) => {
     if (!activeElement) return;
 
-    let x = e.clientX/scale - offsetX;
-    let y = e.clientY/scale - offsetY;
-    let w = activeElement.offsetWidth;
-    let h = activeElement.offsetHeight;
+    let x = e.clientX / scale - offsetX;
+    let y = e.clientY / scale - offsetY;
+    const w = activeElement.offsetWidth;
+    const h = activeElement.offsetHeight;
 
-    const canvas = document.getElementById('canvas');
-    const canvasRect = canvas.getBoundingClientRect();
+    if (activeElement.classList.contains('object')) {
 
-    activeElement.style.left = x + 'px';
-    activeElement.style.top = y + 'px';
+        // X
+        if (Math.round((x - 960 + (w / 2)) / 32) * 32 === 0) x = 960 - (w / 2);
+        if (Math.round(x / 32) * 32 === 0) x = 0;
+        else if (Math.round((x + w) / 32) * 32 === 0) x = -w;
+        else if (Math.round((x - 1920) / 32) * 32 === 0) x = 1920;
+        else if (Math.round((x - 1920 + w) / 32) * 32 === 0) x = 1920 - w;
 
-    // X
-    if (Math.round((x-960+(w/2)) / 32)*32 === 0) {
-        activeElement.style.left = (960-(w/2)) +'px';
-    }
+        // Y
+        if (Math.round((y - 540 + (h / 2)) / 32) * 32 === 0) y = 540 - (h / 2);
+        if (Math.round(y / 32) * 32 === 0) y = 0;
+        else if (Math.round((y + h) / 32) * 32 === 0) y = -h;
+        else if (Math.round((y - 1080) / 32) * 32 === 0) y = 1080;
+        else if (Math.round((y - 1080 + h) / 32) * 32 === 0) y = 1080 - h;
 
-    if (Math.round(x / 32)*32 === 0) {
-        activeElement.style.left = '0px';
-    }
-    else if (Math.round((x+w) / 32)*32 === 0) {
-        activeElement.style.left = -w + 'px';
-    }
-    else if (Math.round((x-1920) / 32)*32 === 0) {
-        activeElement.style.left = '1920px';
-    }
-    else if (Math.round((x-1920+w) / 32)*32 === 0) {
-        activeElement.style.left = (1920 - w) + 'px';
-    }
+        activeElement.style.left = x + 'px';
+        activeElement.style.top = y + 'px';
 
+        const canvas = document.getElementById('canvas');
+        const canvasRect = canvas.getBoundingClientRect();
 
-    // Y
-    if (Math.round((y-540+(h/2)) / 32)*32 === 0) {
-        activeElement.style.top = (540-(h/2)) +'px';
+        editBox.style.left = (canvasRect.left + x * scale - 5) + 'px';
+        editBox.style.top = (canvasRect.top + y * scale - 5) + 'px';
+        editBox.style.width = (w * scale + 10) + 'px';
+        editBox.style.height = (h * scale + 10) + 'px';
     }
+    else if (activeElement.classList.contains('osb-round-handle')) {
+        const side = activeElement.getAttribute('side');
+        const currentY = e.clientY / scale;
+        const diffY = currentY - initialMouseY; 
 
-    if (Math.round(y / 32)*32 === 0) {
-        activeElement.style.top = '0px';
-    }
-    else if (Math.round((y+h) / 32)*32 === 0) {
-        activeElement.style.top = -h + 'px';
-    }
-    else if (Math.round((y-1080) / 32)*32 === 0) {
-        activeElement.style.top = '1080px';
-    }
-    else if (Math.round((y-1080+h) / 32)*32 === 0) {
-        activeElement.style.top = (1080 - h) + 'px';
+        const canvas = document.getElementById('canvas');
+        const canvasRect = canvas.getBoundingClientRect();
+
+        switch (side) {
+            case 'tm': {
+                let newHeight = initialHeight - diffY;
+                let newTop = initialTop + diffY;
+
+                if (newHeight < 10) {
+                    newHeight = 10;
+                    newTop = initialTop + (initialHeight - 10);
+                }
+
+                lastObject.style.height = newHeight + 'px';
+                lastObject.style.top = newTop + 'px';
+
+                editBox.style.top = (canvasRect.top + newTop * scale - 5) + 'px';
+                editBox.style.height = (newHeight * scale + 10) + 'px';
+                break;
+            }
+            case 'bm': {
+                let newHeight = initialHeight + diffY;
+
+                if (Math.round((lastObject.offsetTop + newHeight - 1080) / 32) * 32 === 0) {
+                    newHeight = 1080 - lastObject.offsetTop;
+                } else if (Math.round((lastObject.offsetTop + newHeight) / 32) * 32 === 0) {
+                    newHeight = -lastObject.offsetTop; 
+                }
+
+                if (newHeight < 10) newHeight = 10; // Minimalus aukštis ||| TODO: make it flip if negative
+
+                lastObject.style.height = newHeight + 'px';
+
+                editBox.style.height = (newHeight * scale + 10) + 'px';
+                break;
+            }
+        }
     }
 });
 

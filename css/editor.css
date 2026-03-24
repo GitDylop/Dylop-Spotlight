@@ -140,17 +140,6 @@ body {
     z-index: 2;
 }
 
-.object:focus::after {
-    content: "";
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    width: calc(100% + 20px);
-    height: calc(100% + 20px);
-    border-radius: 8px;
-    border-color: aqua;
-}
-
 #status-bar {
     position: fixed;
     bottom: 0;
@@ -235,5 +224,73 @@ body {
 }
 
 .present-object {
-    position: absolute
+    position: absolute;
+}
+
+
+
+#object-selection-box {
+    display: none;
+    position: absolute;
+    border-radius: 4px;
+    border: 2px solid black;
+    pointer-events: none;
+}
+
+.osb-round-handle {
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(0, 0, 0);
+    position: absolute;
+    pointer-events: auto;
+}
+
+.osb-round-handle[side="tl"] {
+    top: -6px;
+    left: -6px;
+    cursor: nwse-resize;
+}
+
+.osb-round-handle[side="tm"] {
+    top: -6px;
+    left: calc(50% - 6px);
+    cursor: ns-resize;
+}
+
+.osb-round-handle[side="tr"] {
+    top: -6px;
+    right: -6px;
+    cursor: nesw-resize;
+}
+
+.osb-round-handle[side="ml"] {
+    top: calc(50% - 6px);
+    left: -6px;
+    cursor: ew-resize;
+}
+
+.osb-round-handle[side="mr"] {
+    top: calc(50% - 6px);
+    right: -6px;
+    cursor: ew-resize;
+}
+
+.osb-round-handle[side="bl"] {
+    bottom: -6px;
+    left: -6px;
+    cursor: nesw-resize;
+}
+
+.osb-round-handle[side="bm"] {
+    bottom: -6px;
+    left: calc(50% - 6px);
+    cursor: ns-resize;
+}
+
+.osb-round-handle[side="br"] {
+    bottom: -6px;
+    right: -6px;
+    cursor: nwse-resize;
 }
