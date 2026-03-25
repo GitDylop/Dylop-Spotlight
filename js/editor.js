@@ -4,7 +4,7 @@ let activeElement = null;
 let offsetX, offsetY;
 let scale = 0.55;
 class Object {
-    constructor({ id, type, x, y, width, height, background, color = "black" }) {
+    constructor({ id, type, x, y, width, height, background, color = "black", transform = "none"}) {
         this.id = id;
         this.type = type;
         this.x = x || 0;
@@ -13,10 +13,13 @@ class Object {
         this.height = height || 100;
         this.background = background || "#ffffff";
         this.color = color;
+        this.transform = transform;
     }
 }
 let eSlide = 0;
 let pSlide = 0;
+let initialRotation = 0;
+let shiftKeyPressed = false;
 
 
 function newSlide() {
@@ -102,16 +105,18 @@ function addObject() {
 
 function createObjectFromData(data) {
     console.log(data);
-    const canvas = document.getElementById('canvas'); // Pridėta
+    const canvas = document.getElementById('canvas');
     const object = document.createElement('div');
     object.className = 'object';
     
     object.style.position = 'absolute';
     object.style.left = data.x + 'px';
     object.style.top = data.y + 'px';
-    object.style.width = data.width + 'px'; // Pakeista iš 300px
-    object.style.height = data.height + 'px'; // Pakeista iš 300px
-    object.style.backgroundColor = data.background; // Naudojame spalvą iš DB
+    object.style.width = data.width + 'px';
+    object.style.height = data.height + 'px';
+    object.style.backgroundColor = data.background;
+    object.style.transform = data.transform;
+    
 
     canvas.appendChild(object);
 }
@@ -144,10 +149,30 @@ document.addEventListener('mousedown', (e) => {
         }
         if (e.target.classList.contains('osb-round-handle')) {
             activeElement = e.target;
+            const side = activeElement.getAttribute('side');
+
+            if (side === 'rotate') {
+                const rect = lastObject.getBoundingClientRect();
+                // Centras ekrano koordinatėmis (reikalingas Math.atan2 skaičiavimui)
+                centerX = rect.left + rect.width / 2;
+                centerY = rect.top + rect.height / 2;
+                
+                const dy = e.clientY - centerY;
+                const dx = e.clientX - centerX;
+                startAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+                
+                // Pasiimame esamą rotaciją iš style (jei yra)
+                const style = lastObject.style.transform;
+                const match = style.match(/rotate\(([^deg]+)deg\)/);
+                initialRotation = match ? parseFloat(match[1]) : 0;
+            }
             
             // Užfiksuojame būseną paspaudimo akimirką
+            initialWidth = lastObject.offsetWidth;
             initialHeight = lastObject.offsetHeight;
             initialTop = lastObject.offsetTop;
+            initialLeft = lastObject.offsetLeft;
+            initialMouseX = e.clientX / scale; 
             initialMouseY = e.clientY / scale; 
 
             editBox.style.display = 'block';
@@ -155,7 +180,7 @@ document.addEventListener('mousedown', (e) => {
     }
 });
 
-let initialHeight, initialTop, initialMouseY;
+let initialWidth, initialHeight, initialTop, initialLeft, initialMouseX, initialMouseY, centerX, centerY, startAngle;
 
 document.addEventListener('mousemove', (e) => {
     if (!activeElement) return;
@@ -194,16 +219,72 @@ document.addEventListener('mousemove', (e) => {
     }
     else if (activeElement.classList.contains('osb-round-handle')) {
         const side = activeElement.getAttribute('side');
+        const currentX = e.clientX / scale;
         const currentY = e.clientY / scale;
+        const diffX = currentX - initialMouseX; 
         const diffY = currentY - initialMouseY; 
 
         const canvas = document.getElementById('canvas');
         const canvasRect = canvas.getBoundingClientRect();
 
         switch (side) {
-            case 'tm': {
+            case 'tl': {
+                let newWidth = initialWidth - diffX;
                 let newHeight = initialHeight - diffY;
                 let newTop = initialTop + diffY;
+                let newLeft = initialLeft + diffX;
+
+                if (Math.round(newTop / 32) * 32 === 0) {
+                    newTop = 0;
+                    newHeight = initialTop + initialHeight;
+                }
+                else if (Math.round((newTop - 1080) / 32) * 32 === 0) {
+                    newTop = 1080;
+                    newHeight = initialTop + initialHeight - 1080;
+                }
+                if (Math.round(newLeft / 32) * 32 === 0) {
+                    newLeft = 0;
+                    newWidth = initialLeft + initialWidth;
+                }
+                else if (Math.round((newLeft - 1920) / 32) * 32 === 0) {
+                    newLeft = 1920;
+                    newWidth = initialLeft + initialWidth - 1920;
+                }
+
+                if (newWidth < 10) {
+                    newWidth = 10;
+                    newLeft = initialLeft + (initialWidth - 10);
+                }
+                if (newHeight < 10) {
+                    newHeight = 10;
+                    newTop = initialTop + (initialHeight - 10);
+                }
+
+                lastObject.style.width = newWidth + 'px';
+                lastObject.style.height = newHeight + 'px';
+                lastObject.style.top = newTop + 'px';
+                lastObject.style.left = newLeft + 'px';
+
+                editBox.style.top = (canvasRect.top + newTop * scale - 5) + 'px';
+                editBox.style.left = (canvasRect.left + newLeft * scale - 5) + 'px';
+                editBox.style.width = (newWidth * scale + 10) + 'px';
+                editBox.style.height = (newHeight * scale + 10) + 'px';
+                break;
+            }
+            case 'tm': {
+                let newWidth = initialWidth - diffX;
+                let newHeight = initialHeight - diffY;
+                let newTop = initialTop + diffY;
+                let newLeft = initialLeft + diffX;
+
+                if (Math.round(newTop / 32) * 32 === 0) {
+                    newTop = 0;
+                    newHeight = initialTop + initialHeight;
+                }
+                else if (Math.round((newTop - 1080) / 32) * 32 === 0) {
+                    newTop = 1080;
+                    newHeight = initialTop + initialHeight - 1080;
+                }
 
                 if (newHeight < 10) {
                     newHeight = 10;
@@ -214,6 +295,115 @@ document.addEventListener('mousemove', (e) => {
                 lastObject.style.top = newTop + 'px';
 
                 editBox.style.top = (canvasRect.top + newTop * scale - 5) + 'px';
+                editBox.style.height = (newHeight * scale + 10) + 'px';
+                break;
+            }
+            case 'tr': {
+                let newWidth = initialWidth + diffX;
+                let newHeight = initialHeight - diffY;
+                let newTop = initialTop + diffY;
+
+                if (Math.round(newTop / 32) * 32 === 0) {
+                    newTop = 0;
+                    newHeight = initialTop + initialHeight;
+                }
+                else if (Math.round((newTop - 1080) / 32) * 32 === 0) {
+                    newTop = 1080;
+                    newHeight = initialTop + initialHeight - 1080;
+                }
+                if (Math.round((lastObject.offsetLeft + newWidth - 1920) / 32) * 32 === 0) {
+                    newWidth = 1920 - lastObject.offsetLeft;
+                } else if (Math.round((lastObject.offsetLeft + newWidth) / 32) * 32 === 0) {
+                    newWidth = -lastObject.offsetLeft; 
+                }
+
+                if (newWidth < 10) newWidth = 10;
+                if (newHeight < 10) {
+                    newHeight = 10;
+                    newTop = initialTop + (initialHeight - 10);
+                }
+
+                lastObject.style.width = newWidth + 'px';
+                lastObject.style.height = newHeight + 'px';
+                lastObject.style.top = newTop + 'px';
+
+                editBox.style.top = (canvasRect.top + newTop * scale - 5) + 'px';
+                editBox.style.width = (newWidth * scale + 10) + 'px';
+                editBox.style.height = (newHeight * scale + 10) + 'px';
+                break;
+            }
+            case 'ml': {
+                let newWidth = initialWidth - diffX;
+                let newLeft = initialLeft + diffX;
+
+                if (Math.round(newLeft / 32) * 32 === 0) {
+                    newLeft = 0;
+                    newWidth = initialLeft + initialWidth;
+                }
+                else if (Math.round((newLeft - 1920) / 32) * 32 === 0) {
+                    newLeft = 1920;
+                    newWidth = initialLeft + initialWidth - 1920;
+                }
+
+                if (newWidth < 10) {
+                    newWidth = 10;
+                    newLeft = initialLeft + (initialWidth - 10);
+                }
+
+                lastObject.style.width = newWidth + 'px';
+                lastObject.style.left = newLeft + 'px';
+
+                editBox.style.left = (canvasRect.left + newLeft * scale - 5) + 'px';
+                editBox.style.width = (newWidth * scale + 10) + 'px';
+                break;
+            }
+            case 'mr': {
+                let newWidth = initialWidth + diffX;
+
+                if (Math.round((lastObject.offsetLeft + newWidth - 1920) / 32) * 32 === 0) {
+                    newWidth = 1920 - lastObject.offsetLeft;
+                } else if (Math.round((lastObject.offsetLeft + newWidth) / 32) * 32 === 0) {
+                    newWidth = -lastObject.offsetLeft; 
+                }
+
+                if (newWidth < 10) newWidth = 10;
+
+                lastObject.style.width = newWidth + 'px';
+
+                editBox.style.width = (newWidth * scale + 10) + 'px';
+                break;
+            }
+            case 'bl': {
+                let newWidth = initialWidth - diffX;
+                let newLeft = initialLeft + diffX;
+                let newHeight = initialHeight + diffY;
+
+                if (Math.round((lastObject.offsetTop + newHeight - 1080) / 32) * 32 === 0) {
+                    newHeight = 1080 - lastObject.offsetTop;
+                } else if (Math.round((lastObject.offsetTop + newHeight) / 32) * 32 === 0) {
+                    newHeight = -lastObject.offsetTop; 
+                }
+                if (Math.round(newLeft / 32) * 32 === 0) {
+                    newLeft = 0;
+                    newWidth = initialLeft + initialWidth;
+                }
+                else if (Math.round((newLeft - 1920) / 32) * 32 === 0) {
+                    newLeft = 1920;
+                    newWidth = initialLeft + initialWidth - 1920;
+                }
+
+                if (newHeight < 10) newHeight = 10; // Minimalus aukštis ||| TODO: make it flip if negative
+                if (newWidth < 10) {
+                    newWidth = 10;
+                    newLeft = initialLeft + (initialWidth - 10);
+                }
+
+                lastObject.style.width = newWidth + 'px';
+                lastObject.style.height = newHeight + 'px';
+                lastObject.style.left = newLeft + 'px';
+
+                editBox.style.left = (canvasRect.left + newLeft * scale - 5) + 'px';
+                editBox.style.width = (newWidth * scale + 10) + 'px';
                 editBox.style.height = (newHeight * scale + 10) + 'px';
                 break;
             }
@@ -231,6 +421,54 @@ document.addEventListener('mousemove', (e) => {
                 lastObject.style.height = newHeight + 'px';
 
                 editBox.style.height = (newHeight * scale + 10) + 'px';
+                break;
+            }
+            case 'br': {
+                let newWidth = initialWidth + diffX;
+                let newHeight = initialHeight + diffY;
+
+                if (Math.round((lastObject.offsetTop + newHeight - 1080) / 32) * 32 === 0) {
+                    newHeight = 1080 - lastObject.offsetTop;
+                } else if (Math.round((lastObject.offsetTop + newHeight) / 32) * 32 === 0) {
+                    newHeight = -lastObject.offsetTop; 
+                }
+                if (Math.round((lastObject.offsetLeft + newWidth - 1920) / 32) * 32 === 0) {
+                    newWidth = 1920 - lastObject.offsetLeft;
+                } else if (Math.round((lastObject.offsetLeft + newWidth) / 32) * 32 === 0) {
+                    newWidth = -lastObject.offsetLeft; 
+                }
+
+                if (newHeight < 10) newHeight = 10; // Minimalus aukštis ||| TODO: make it flip if negative
+                if (newWidth < 10) newWidth = 10;
+                
+                lastObject.style.width = newWidth + 'px';
+                lastObject.style.height = newHeight + 'px';
+
+                editBox.style.width = (newWidth * scale + 10) + 'px';
+                editBox.style.height = (newHeight * scale + 10) + 'px';
+                break;
+            }
+            case 'rotate': {
+                const dy = e.clientY - centerY;
+                const dx = e.clientX - centerX;
+                
+                // Dabartinis pelės kampas centro atžvilgiu
+                const currentMouseAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+                
+                // Skirtumas tarp pradinio paspaudimo ir dabartinės vietos
+                let rotation = initialRotation + (currentMouseAngle - startAngle);
+
+                // Snapping: kas 15 laipsnių (labai patogu vartotojui)
+                if (shiftKeyPressed) {
+                    rotation = Math.round(rotation / 15) * 15;
+                }
+
+                // Pritaikome rotaciją abiem elementams
+                lastObject.style.transform = `rotate(${rotation}deg)`;
+                editBox.style.transform = `rotate(${rotation}deg)`;
+                
+                // Svarbu: kad rėmelis „nešokinėtų“, jo transform-origin turi būti centre
+                // (Tai geriausia nustatyti CSS: #object-selection-box { transform-origin: center; })
                 break;
             }
         }
@@ -282,8 +520,19 @@ document.addEventListener('keydown', (e) => {
         }
     }
 
+    if (e.key === 'Shift') {
+        shiftKeyPressed = true;
+    }
+
     updateLocalSave();
 });
+
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'Shift') {
+        shiftKeyPressed = false;
+    }
+});
+
 
 function exitPresentationMode() {
     document.fullscreenEnabled = false;
@@ -325,9 +574,10 @@ function updateLocalSave() {
             y: parseInt(obj.style.top) || 0,
             width: w,
             height: h,
-            background: obj.style.backgroundColor
+            background: obj.style.backgroundColor,
+            transform: obj.style.transform
         };
-});
+    });
 
     // 3. Atnaujiname duomenis mūsų kintamajame slidesData
     // eSlide yra tavo dabartinis indeksas
@@ -382,6 +632,7 @@ function loadPresentationSlide() {
                 objectEl.style.left = object.x + 'px';
                 objectEl.style.top = object.y + 'px';
                 objectEl.style.backgroundColor = object.background;
+                objectEl.style.transform = object.transform;
                 slideEl.appendChild(objectEl);
             });
             presentParent.appendChild(slideEl);

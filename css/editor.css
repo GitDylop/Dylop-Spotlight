@@ -147,6 +147,7 @@ body {
     padding: 10px;
     display: flex;
     justify-content: right;
+    pointer-events: none;
 }
 
 .status-bubble {
@@ -158,6 +159,7 @@ body {
     align-content: center;
     cursor: pointer;
     margin-left: 40px;
+    pointer-events: auto;
 }
 
 .status-bubble[bubble="circle"] {
@@ -293,4 +295,10 @@ body {
     bottom: -6px;
     right: -6px;
     cursor: nwse-resize;
+}
+
+.osb-round-handle[side="rotate"] {
+    top: -30px;
+    left: calc(50% - 6px);
+    cursor: grab;
 }
