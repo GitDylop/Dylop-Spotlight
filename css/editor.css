@@ -1,4 +1,6 @@
 * {
+    padding: 0;
+    margin: 0;
     box-sizing: border-box;
 }
 
@@ -22,16 +24,22 @@
     width: min-content;
 }
 
+#toolbar tr {
+    height: 30px;
+    max-height: 30px;
+}
+
 #toolbar td {
     background-color: hsla(0, 0%, 100%, 0.25);
     width: 30px;
-    height: 30px;
     border-radius: 10px;
     text-align: center;
     cursor: pointer;
     max-width: 30px;
     user-select: none;
     -webkit-user-select: none;
+    position: relative;
+    align-items: center;
 }
 
 #toolbar td.tspace {
@@ -40,12 +48,54 @@
     pointer-events: none;
 }
 
-#toolbar td:hover {
-    backdrop-filter: brightness(110%);
-}
-
 #toolbar td.on {
     backdrop-filter: brightness(120%);
+}
+
+#toolbar td img {
+    max-width: 30px;
+    max-height: 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+}
+
+#toolbar .cell-withInput img {
+    max-width: 30px;
+    max-height: 30px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    position: absolute;
+}
+
+#toolbar .cell-withInput:hover {
+    backdrop-filter: none;
+    cursor: default;
+}
+
+#bg-color-selector, #txt-color-selector {
+    max-width: 30px;
+    max-height: 30px;
+    top: 50%;
+    right: 3px;
+    transform: translateY(-50%);
+    position: absolute;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+input[type="number"] {
+    width: 50px;
+    height: 30px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    font-size: 14px;
 }
 
 body {
@@ -134,10 +184,21 @@ body {
 }
 
 .object {
+    display: flex;
     position: absolute;
-    user-select: none;
+    user-select: text;
     cursor: move;
+    line-height: 1.2;
+    font-size: 32px;
     z-index: 2;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+    font-variant-ligatures: none;
+    font-kerning: none;
+    text-rendering: geometricPrecision; */
 }
 
 #status-bar {
@@ -227,9 +288,12 @@ body {
 
 .present-object {
     position: absolute;
+    flex-direction: column;
+    font-size: 32px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-
-
 
 #object-selection-box {
     display: none;
@@ -301,4 +365,58 @@ body {
     top: -30px;
     left: calc(50% - 6px);
     cursor: grab;
+}
+
+
+
+
+
+.tb-dropdown-menu {
+    font-weight: normal;
+    font-size: 18px;
+    width: 80px;
+    height: 40px;
+    align-content: center;
+    text-align: center;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+.tb-dropdown-menu:hover {
+    backdrop-filter: brightness(120%);
+}
+
+.tb-dropdown {
+    text-align: left;
+    top: 0;
+    width: 300px;
+    height: 100px;
+    position: absolute;
+    z-index: 100;
+}
+
+.tb-dropdown-list {
+    position: absolute;
+    top: 70px;
+    width: 300px;
+    background-color: hsl(210, 50%, 80%);
+    padding: 5px 10px;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px hsla(210, 50%, 40%, 0.25);
+}
+
+.tb-dropdown-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+}
+
+.tb-dropdown-item:hover {
+    backdrop-filter: brightness(110%);
+}
+
+.tb-dropdown hr {
+    border: 1px solid hsla(210, 50%, 80%, 0.1);
 }

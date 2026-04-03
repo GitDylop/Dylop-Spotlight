@@ -5,7 +5,7 @@
 
 header {
     display: flex;
-    background-color: hsl(200, 50%, 40%);
+    background-color: hsl(210, 50%, 20%);
     color: hsl(0, 0%, 100%);
     text-align: left;
     font-family: sans-serif;
@@ -15,4 +15,75 @@ header {
     min-height: 60px;
     align-items: center;
     padding: 0 10px;
+    z-index: 1000000;
+}
+
+
+.h-dropdown-menu {
+    font-weight: normal;
+    font-size: 18px;
+    width: 80px;
+    height: 40px;
+    align-content: center;
+    text-align: center;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    margin-left: 10px;
+}
+
+.h-dropdown-menu:hover {
+    backdrop-filter: brightness(120%);
+}
+
+.h-dropdown {
+    text-align: left;
+    top: 0;
+    width: 300px;
+    height: 100px;
+    position: absolute;
+}
+
+.h-dropdown-list {
+    position: absolute;
+    top: 50px;
+    width: 300px;
+    background-color: hsl(210, 50%, 15%);
+    padding: 5px 10px;
+    border-radius: 0px 0px 20px 20px;
+}
+
+.h-dropdown-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+}
+
+.h-dropdown-item:hover {
+    backdrop-filter: brightness(150%);
+}
+
+.h-dropdown hr {
+    border: 1px solid hsla(210, 50%, 80%, 0.1);
+}
+
+#project-title {
+    width: 200px;
+    height: 40px;
+    border-radius: 10px;
+    border: 2px dashed hsl(210, 50%, 10%);
+    background-color: hsl(210, 50%, 20%);
+    font-size: 20px;
+    outline: none;
+    padding: 0 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#project-title:focus {
+    border: none;
+    color: black;
+    background-color: hsla(0, 0%, 100%, 0.75);
 }

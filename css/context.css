@@ -70,9 +70,35 @@
     border-radius: 10px;
     padding: 0 5px;
     cursor: pointer;
+    position: relative;
 }
 
 
 .cm-item:hover {
     background-color: hsla(0, 0%, 0%, 0.05);
+}
+
+.cm-main .cm-item {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.cm-main .cm-item img {
+    width: 100%;
+    height: 100%;
+    max-width: 26px;
+    max-height: 26px;
+}
+
+.cm-bubble img, .cm-row-header .cm-item img {
+    max-width: 40px;
+    max-height: 40px;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
 }
